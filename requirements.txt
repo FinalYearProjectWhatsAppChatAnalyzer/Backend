@@ -15,4 +15,5 @@ Counter
 streamlit
 seaborn
 matplotlib
+nltk
 emoji>=1.7.0
