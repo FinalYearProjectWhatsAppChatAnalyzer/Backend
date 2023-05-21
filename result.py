@@ -42,11 +42,56 @@ def run_app():
                 st.header("Links Shared")
                 st.title(num_links)
 
+
+
+
+            # finding the busiest users in the group(Group level)
+            if selected_user == 'Overall':
+                st.title('Most Busy Users')
+                x,new_df = helper.most_busy_users(df)
+                fig, ax = plt.subplots()
+
+                # col1, col2,col3 = st.columns(3)
+                col1, col2 = st.columns([6, 4])
+
+                with col1:
+                    fig, ax = plt.subplots()
+                    ax.bar(x.index, x.values,color='red')
+                    ax.set_xlabel('Users')
+                    ax.set_ylabel('Number of messages')
+                    plt.xticks(rotation='vertical')
+                    st.pyplot(fig)
+                with col2:
+                    st.dataframe(new_df)
+
+            # WordCloud
+            st.title("Wordcloud")
+            df_wc = helper.create_wordcloud(selected_user,df)
+            fig,ax = plt.subplots()
+            ax.imshow(df_wc)
+            plt.axis('off')
+            st.pyplot(fig)
+
+            # most common words
+            most_common_df = helper.most_common_words(selected_user,df)
+
+            fig,ax = plt.subplots()
+
+            ax.barh(most_common_df[0],most_common_df[1])
+            plt.xticks()
+            ax.set_xlabel('frequency')
+            ax.set_ylabel('Words')
+            st.title('Most common words')
+            st.pyplot(fig)
+    
+
             # monthly timeline
             st.title("Monthly Timeline")
             timeline = helper.monthly_timeline(selected_user,df)
             fig,ax = plt.subplots()
             ax.plot(timeline['time'], timeline['message'],color='green')
+            ax.set_xlabel('Month')
+            ax.set_ylabel('Number of messages' ,color = 'blue')
             plt.xticks(rotation='vertical')
             st.pyplot(fig)
 
@@ -55,6 +100,8 @@ def run_app():
             daily_timeline = helper.daily_timeline(selected_user, df)
             fig, ax = plt.subplots()
             ax.plot(daily_timeline['only_date'], daily_timeline['message'], color='black')
+            ax.set_xlabel('Day')
+            ax.set_ylabel('Number of messages')
             plt.xticks(rotation='vertical')
             st.pyplot(fig)
 
@@ -67,6 +114,8 @@ def run_app():
                 busy_day = helper.week_activity_map(selected_user,df)
                 fig,ax = plt.subplots()
                 ax.bar(busy_day.index,busy_day.values,color='purple')
+                ax.set_xlabel('Day')
+                ax.set_ylabel('Number of messages')
                 plt.xticks(rotation='vertical')
                 st.pyplot(fig)
 
@@ -75,6 +124,8 @@ def run_app():
                 busy_month = helper.month_activity_map(selected_user, df)
                 fig, ax = plt.subplots()
                 ax.bar(busy_month.index, busy_month.values,color='orange')
+                ax.set_xlabel('Month')
+                ax.set_ylabel('Number of messages')
                 plt.xticks(rotation='vertical')
                 st.pyplot(fig)
 
@@ -84,39 +135,7 @@ def run_app():
             ax = sns.heatmap(user_heatmap)
             st.pyplot(fig)
 
-            # finding the busiest users in the group(Group level)
-            if selected_user == 'Overall':
-                st.title('Most Busy Users')
-                x,new_df = helper.most_busy_users(df)
-                fig, ax = plt.subplots()
-
-                col1, col2 = st.columns(2)
-
-                with col1:
-                    ax.bar(x.index, x.values,color='red')
-                    plt.xticks(rotation='vertical')
-                    st.pyplot(fig)
-                with col2:
-                    st.dataframe(new_df)
-
-            # WordCloud
-            st.title("Wordcloud")
-            df_wc = helper.create_wordcloud(selected_user,df)
-            fig,ax = plt.subplots()
-            ax.imshow(df_wc)
-            st.pyplot(fig)
-
-            # most common words
-            most_common_df = helper.most_common_words(selected_user,df)
-
-            fig,ax = plt.subplots()
-
-            ax.barh(most_common_df[0],most_common_df[1])
-            plt.xticks(rotation='vertical')
-
-            st.title('Most commmon words')
-            st.pyplot(fig)
-
+            
             # emoji analysis
             emoji_df = helper.emoji_helper(selected_user,df)
 
@@ -138,10 +157,31 @@ def run_app():
             
             #### Sentiment analysis
 
-            sentiment = helper.sentiment_analysis(selected_user,df)
-            st.title("Sentiment Analysis")
+            sentiment,da,emo = helper.sentiment_analysis(selected_user,df)
 
-            st.write('The Sentiment of the chat overall is ',sentiment)
+
+            st.title("Sentiment Analysis")
+            st.write("\n")
+
+            col1,col2 = st.columns(2)
+
+        
+
+            with col1:
+                st.markdown(f""" 
+                ## The Sentiment of the chat overall is ,{sentiment}
+                
+                ## Positive :smile: - {"{:.2f}".format(da[0])} %
+                ## Negative :disappointed_relieved: - {"{:.2f}".format(da[1])} %
+                ## Neutral :neutral_face: - {"{:.2f}".format(da[2])} %
+                """)
+
+            with col2:
+                st.write("\n")
+                fig,ax = plt.subplots()
+                ax.pie(da,labels = emo,autopct='%1.2f%%')
+                st.pyplot(fig)
+            
 
 
 

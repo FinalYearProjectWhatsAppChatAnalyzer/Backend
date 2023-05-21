@@ -11,26 +11,6 @@ extractor = URLExtract()
 
 def fetch_stats(selected_user,df):
 
-    # if selected_user == 'Overall':
-    #     num_messages = df.shape[0]   #fetch number of messages
-
-    #     words=[]    # fetch number of words
-    #     for message in df['message']:
-    #         words.extend(message.split())
-
-        
-    #     return num_messages,len(words)
-    
-    # else:
-    #     new_df = df[df['user']== selected_user]
-    #     num_messages = new_df.shape[0]
-
-    #     words=[]    # fetch number of words
-    #     for message in new_df['message']:
-    #         words.extend(message.split())
-
-    #     return num_messages,len(words)
-
     if selected_user !="Overall":
         df = df[df['user']== selected_user]
 
@@ -54,7 +34,7 @@ def fetch_stats(selected_user,df):
 
 
 def most_busy_users(df):
-    x = df['user'].value_counts().head()
+    x = df['user'].value_counts().head().drop('Group_notification')
     df = round((df['user'].value_counts()/df.shape[0])*100,2).reset_index().rename(columns={'index':'name','user':'percent'})
     return x,df
 
@@ -196,8 +176,14 @@ def sentiment_analysis(selected_user,df):
             return ("Negative")
         else:
             return ("Neutral")
+        
+
+    da = [(x/df.shape[0])*100,(y/df.shape[0])*100,(z/df.shape[0])*100]
+    emo = ['Positive','Negative','Neutral']
+
+    
 
 
     result = score(x,y,z)
 
-    return result
+    return result,da,emo

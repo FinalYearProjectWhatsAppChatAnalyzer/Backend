@@ -27,8 +27,7 @@
                             <div class="col-lg-10">
                                    
                                     <button id="open-streamlit" class="btn btn-warning upload-btn" onclick="openStreamlit()">UPLOAD</button>
-
-                        
+                                    <div id="loading"></div>
                             </div>
                     </div>
                 </div>  
@@ -43,6 +42,7 @@
 
             <script>
                 function openStreamlit() {
+                    document.getElementById("loading").innerHTML = "Loading...";
                 fetch('/result')
                     .then(response => response.json())
                     .then(data => console.log(data));

@@ -20,7 +20,7 @@ def preprocess(data) :
             users.append(entry[1])
             messages.append(entry[2])
         else:
-            users.append("Media omitted")
+            users.append("Group_notification")
             messages.append(entry[0])
         
     df["user"] = users

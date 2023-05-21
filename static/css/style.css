@@ -55,9 +55,9 @@
     font-size: 20px;
     text-align: center;
 }
-#nav-section li .active{
+/* #nav-section li .active{
     color: #ffd92e;
-}
+} */
 #nav-section li a:hover{
     
     color: #ffd92e;
