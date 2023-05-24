@@ -2,6 +2,33 @@ import streamlit as st
 import preprocess,helper
 import matplotlib.pyplot as plt
 import seaborn as sns
+import pdfkit
+import plotly.graph_objs as go
+import plotly.express as px
+
+
+# from selenium import webdriver
+# from webdriver_manager.chrome import ChromeDriverManager
+
+# # Launch the Streamlit app in a headless Chrome browser
+# options = webdriver.ChromeOptions()
+# options.add_argument("--headless")  # Run Chrome in headless mode
+# driver = webdriver.Chrome(ChromeDriverManager().install(), options=options)
+# driver.get('http://localhost:8501')  # Replace with the URL of your Streamlit app
+
+# # Capture the HTML content of the entire page
+# html_content = driver.page_source
+
+# # Save the HTML content to a file (optional)
+# with open('output.html', 'w', encoding='utf-8') as file:
+#     file.write(html_content)
+
+# # Convert the HTML to PDF using your preferred method/library
+# # ...
+
+# # Close the browser
+# driver.quit()
+
 
 def run_app():
     st.sidebar.title("Whatsapp Chat Analyzer")
@@ -91,7 +118,7 @@ def run_app():
             fig,ax = plt.subplots()
             ax.plot(timeline['time'], timeline['message'],color='green')
             ax.set_xlabel('Month')
-            ax.set_ylabel('Number of messages' ,color = 'blue')
+            ax.set_ylabel('Number of messages')
             plt.xticks(rotation='vertical')
             st.pyplot(fig)
 
@@ -129,11 +156,22 @@ def run_app():
                 plt.xticks(rotation='vertical')
                 st.pyplot(fig)
 
-            st.title("Weekly Activity Map")
+
+            
+            ####Heatmap####
             user_heatmap = helper.activity_heatmap(selected_user,df)
-            fig,ax = plt.subplots()
-            ax = sns.heatmap(user_heatmap)
-            st.pyplot(fig)
+            def heat_map_gen(df : user_heatmap) -> go.Figure:
+                return px.density_heatmap(user_heatmap,height=500)
+            
+
+
+            st.title("Weekly Activity Map")
+            show_heatmap = heat_map_gen(user_heatmap)
+            st.plotly_chart(show_heatmap)
+            # user_heatmap = helper.activity_heatmap(selected_user,df)
+            # fig,ax = plt.subplots()
+            # ax = sns.heatmap(user_heatmap)
+            # st.pyplot(fig)
 
             
             # emoji analysis
@@ -149,9 +187,17 @@ def run_app():
                 with col1:
                     st.dataframe(emoji_df)
                 with col2:
-                    fig,ax = plt.subplots()
-                    ax.pie(emoji_df[1].head(),labels=emoji_df[0].head(),autopct="%0.2f")
-                    st.pyplot(fig)
+                    fig = go.Figure(data=[go.Pie(labels=emoji_df[0].head(), values=emoji_df[1].head(), textinfo='label+value')])
+
+                    # Set custom colors for the pie chart
+                    # fig.update_traces(marker=dict(colors=colors))
+                    fig.update_layout(margin=dict(t=0), width=560, height=400)
+
+                    # Display the pie chart using Streamlit
+                    st.plotly_chart(fig)
+                    # fig,ax = plt.subplots()
+                    # ax.pie(emoji_df[1].head(),labels=emoji_df[0].head(),autopct="%0.2f")
+                    # st.pyplot(fig)
 
 
             
@@ -161,7 +207,7 @@ def run_app():
 
 
             st.title("Sentiment Analysis")
-            st.write("\n")
+            
 
             col1,col2 = st.columns(2)
 
@@ -177,12 +223,30 @@ def run_app():
                 """)
 
             with col2:
-                st.write("\n")
-                fig,ax = plt.subplots()
-                ax.pie(da,labels = emo,autopct='%1.2f%%')
-                st.pyplot(fig)
-            
+                colors = ['#59CE72','#FF0000', '#616D76']
 
+                # Create a Pie chart figure
+                fig = go.Figure(data=[go.Pie(labels=emo, values=da, textinfo='label')])
+
+                # Set custom colors for the pie chart
+                fig.update_traces(marker=dict(colors=colors))
+                fig.update_layout(margin=dict(t=0), width=560, height=400)
+
+                # Display the pie chart using Streamlit
+                st.plotly_chart(fig)
+                # fig,ax = plt.subplots()
+
+                # ax.pie(da,labels=emo)
+              
+                # st.pyplot(fig)
+            
+            # if st.sidebar.button("Download Result"):
+            #     # Save the Streamlit app page as HTML
+            #     html_content = st._get_streamlit_specific_html()
+                
+            #     # Convert the HTML to PDF using pdfkit
+            #     pdfkit.from_string(html_content, 'output.pdf')
+            #     st.success('PDF downloaded successfully!')
 
 
 if __name__ == "__main__":
