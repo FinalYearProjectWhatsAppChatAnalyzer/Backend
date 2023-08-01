@@ -36,6 +36,10 @@ def fetch_stats(selected_user,df):
 def most_busy_users(df):
     x = df['user'].value_counts().head()
     df = round((df['user'].value_counts()/df.shape[0])*100,2).reset_index().rename(columns={'index':'name','user':'percent'})
+
+    if 'Group_notification' in x:
+        x= x.drop("Group_notification")
+        
     return x,df
 
 
@@ -74,13 +78,20 @@ def most_common_words(selected_user,df):
     temp = df[df['user'] !='group_notification']
     temp = temp[temp['message'] != '<Media omitted>\n']
 
+    emojis=[]
+    for message in df['message']:
+        for c in message:
+            if c in emoji.EMOJI_DATA:
+                emojis.extend(c)
+
     words=[]
 
     for message in temp['message']:
     #     words.extend(message.split())
         for word in message.lower().split():
             if word not in stop_words:
-                words.append(word)
+                if word not in emojis:
+                    words.append(word)
 
     most_common_words_df = pd.DataFrame(Counter(words).most_common(20))
     return most_common_words_df

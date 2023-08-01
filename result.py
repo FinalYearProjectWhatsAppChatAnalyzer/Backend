@@ -7,28 +7,6 @@ import plotly.graph_objs as go
 import plotly.express as px
 
 
-# from selenium import webdriver
-# from webdriver_manager.chrome import ChromeDriverManager
-
-# # Launch the Streamlit app in a headless Chrome browser
-# options = webdriver.ChromeOptions()
-# options.add_argument("--headless")  # Run Chrome in headless mode
-# driver = webdriver.Chrome(ChromeDriverManager().install(), options=options)
-# driver.get('http://localhost:8501')  # Replace with the URL of your Streamlit app
-
-# # Capture the HTML content of the entire page
-# html_content = driver.page_source
-
-# # Save the HTML content to a file (optional)
-# with open('output.html', 'w', encoding='utf-8') as file:
-#     file.write(html_content)
-
-# # Convert the HTML to PDF using your preferred method/library
-# # ...
-
-# # Close the browser
-# driver.quit()
-
 
 def run_app():
     st.sidebar.title("Whatsapp Chat Analyzer")
@@ -240,13 +218,6 @@ def run_app():
               
                 # st.pyplot(fig)
             
-            # if st.sidebar.button("Download Result"):
-            #     # Save the Streamlit app page as HTML
-            #     html_content = st._get_streamlit_specific_html()
-                
-            #     # Convert the HTML to PDF using pdfkit
-            #     pdfkit.from_string(html_content, 'output.pdf')
-            #     st.success('PDF downloaded successfully!')
 
 
 if __name__ == "__main__":
